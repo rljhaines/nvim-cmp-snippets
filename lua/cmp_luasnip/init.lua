@@ -72,7 +72,7 @@ function source:complete(params, callback)
 		if not snip_cache[ft] then
 			-- ft not yet in cache.
 			local ft_items = {}
-			local ft_table = require("nvim-snippet").get_snippets(ft, {type = "snippets"})
+			local ft_table = require("nvim-snippets").get_snippets(ft, {type = "snippets"})
 			local iter_tab
 			if params.option.show_autosnippets then
 				local auto_table = require('nvim-snippets').get_snippets(ft, {type="autosnippets"})
@@ -110,7 +110,7 @@ function source:complete(params, callback)
 	if params.option.use_show_condition then
 		local line_to_cursor = params.context.cursor_before_line
 		items = vim.tbl_filter(function(i)
-			-- check if show_condition exists in case (somehow) user updated cmp_luasnip but not nvim-snippets
+			-- check if show_condition exists in case (somehow) user updated nvim-cmp-snippets but not nvim-snippets
 			return not i.data.show_condition or i.data.show_condition(line_to_cursor)
 		end, items)
 	end
