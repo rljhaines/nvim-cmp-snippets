@@ -1,28 +1,28 @@
 # cmp_luasnip
 
-[luasnip](https://github.com/L3MON4D3/LuaSnip) completion source for [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
+[nvim-snippets](https://github.com/rljhaines/nvim-snippets) completion source for [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
 
 ```lua
 -- Installation
-use { 'L3MON4D3/LuaSnip' }
+use { 'rljhaines/nvim-snippets' }
 use {
   'hrsh7th/nvim-cmp',
   config = function ()
     require'cmp'.setup {
     snippet = {
       expand = function(args)
-        require'luasnip'.lsp_expand(args.body)
+        require('nvim-snippets').lsp_expand(args.body)
       end
     },
 
     sources = {
-      { name = 'luasnip' },
+      { name = 'nvim-snippets' },
       -- more sources
     },
   }
   end
 }
-use { 'saadparwaiz1/cmp_luasnip' }
+use { 'rljhaines/nvim-cmp-snippets' }
 ```
 
 To disable filtering completion candidates by snippet's `show_condition`
@@ -30,7 +30,7 @@ use the following options in `sources`:
 
 ```lua
 sources = {
-  { name = 'luasnip', option = { use_show_condition = false } },
+  { name = 'nvim-snippets', option = { use_show_condition = false } },
   -- more sources
 },
 ```
@@ -46,10 +46,10 @@ triggers). This option defaults to `false` to be backwards compatible. Example:
 
 ```lua
 sources = {
-  { name = 'luasnip', option = { show_autosnippets = true } },
+  { name = 'nvim-snippets', option = { show_autosnippets = true } },
   -- more sources
 },
 ```
 
 Hint: If you want to just hide some autosnippets consider the `hidden` option of
-luaSnip
+nvim-snippets
