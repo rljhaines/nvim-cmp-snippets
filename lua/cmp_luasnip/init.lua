@@ -9,7 +9,7 @@ local defaults = {
 }
 
 -- the options are being passed via cmp.setup.sources, e.g.
--- require('cmp').setup { sources = { { name = 'luasnip', opts = {...} } } }
+-- require('cmp').setup { sources = { { name = 'nvim-snippets', opts = {...} } } }
 local function init_options(params)
 	params.option = vim.tbl_deep_extend('keep', params.option, defaults)
 	vim.validate({
@@ -27,7 +27,7 @@ source.clear_cache = function()
 end
 
 source.refresh = function()
-	local ft = require("luasnip.session").latest_load_ft
+	local ft = require("nvim-snippets.session").latest_load_ft
 	snip_cache[ft] = nil
 	doc_cache[ft] = nil
 end
@@ -53,18 +53,18 @@ source.get_keyword_pattern = function()
 end
 
 function source:is_available()
-	local ok, _ = pcall(require, "luasnip")
+	local ok, _ = pcall(require, "nvim-snippets")
 	return ok
 end
 
 function source:get_debug_name()
-	return "luasnip"
+	return "nvim-snippets"
 end
 
 function source:complete(params, callback)
 	init_options(params)
 
-	local filetypes = require("luasnip.util.util").get_snippet_filetypes()
+	local filetypes = require("nvim-snippets.util.util").get_snippet_filetypes()
 	local items = {}
 
 	for i = 1, #filetypes do
@@ -72,10 +72,10 @@ function source:complete(params, callback)
 		if not snip_cache[ft] then
 			-- ft not yet in cache.
 			local ft_items = {}
-			local ft_table = require("luasnip").get_snippets(ft, {type = "snippets"})
+			local ft_table = require("nvim-snippet").get_snippets(ft, {type = "snippets"})
 			local iter_tab
 			if params.option.show_autosnippets then
-				local auto_table = require('luasnip').get_snippets(ft, {type="autosnippets"})
+				local auto_table = require('nvim-snippets').get_snippets(ft, {type="autosnippets"})
 				iter_tab = {{ft_table, false}, {auto_table, true}}
 			else
 				iter_tab = {{ft_table, false}}
@@ -110,7 +110,7 @@ function source:complete(params, callback)
 	if params.option.use_show_condition then
 		local line_to_cursor = params.context.cursor_before_line
 		items = vim.tbl_filter(function(i)
-			-- check if show_condition exists in case (somehow) user updated cmp_luasnip but not luasnip
+			-- check if show_condition exists in case (somehow) user updated cmp_luasnip but not nvim-snippets
 			return not i.data.show_condition or i.data.show_condition(line_to_cursor)
 		end, items)
 	end
@@ -120,7 +120,7 @@ end
 
 function source:resolve(completion_item, callback)
 	local item_snip_id = completion_item.data.snip_id
-	local snip = require("luasnip").get_id_snippet(item_snip_id)
+	local snip = require("nvim-snippets").get_id_snippet(item_snip_id)
 	local doc_itm = doc_cache[completion_item.data.filetype] or {}
 	doc_itm = doc_itm[completion_item.data.snip_id] or get_documentation(snip, completion_item.data)
 	completion_item.documentation = {
@@ -131,7 +131,7 @@ function source:resolve(completion_item, callback)
 end
 
 function source:execute(completion_item, callback)
-	local snip = require("luasnip").get_id_snippet(completion_item.data.snip_id)
+	local snip = require("nvim-snippets").get_id_snippet(completion_item.data.snip_id)
 
 	-- if trigger is a pattern, expand "pattern" instead of actual snippet.
 	if snip.regTrig then
@@ -141,7 +141,7 @@ function source:execute(completion_item, callback)
 	local cursor = vim.api.nvim_win_get_cursor(0)
 	-- get_cursor returns (1,0)-indexed position, clear_region expects (0,0)-indexed.
 	cursor[1] = cursor[1] - 1
-	local line = require("luasnip.util.util").get_current_line_to_cursor()
+	local line = require("nvim-snippets.util.util").get_current_line_to_cursor()
 
 	local expand_params = snip:matches(line)
 
@@ -170,7 +170,7 @@ function source:execute(completion_item, callback)
 
 	-- text cannot be cleared before, as TM_CURRENT_LINE and
 	-- TM_CURRENT_WORD couldn't be set correctly.
-	require("luasnip").snip_expand(snip, {
+	require("nvim-snippets").snip_expand(snip, {
 		-- clear word inserted into buffer by cmp.
 		-- cursor is currently behind word.
 		clear_region = clear_region,
